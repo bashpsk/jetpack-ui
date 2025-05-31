@@ -15,7 +15,7 @@ android {
     defaultConfig {
 
         applicationId = "io.bashpsk.jetpackuidemo"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0.0"
@@ -73,6 +73,11 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    //  KOTLINX             :
+//    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.collections.immutable)
+//    implementation(libs.kotlinx.datetime)
+
     //  ICON            :
     implementation(libs.androidx.material.icons.extended)
 
@@ -86,4 +91,7 @@ dependencies {
 
     //  PSK LIBS        :
     implementation(libs.bashpsk.empty.format)
+
+    //  MODULE              :
+    implementation(project(":jetpack-ui"))
 }

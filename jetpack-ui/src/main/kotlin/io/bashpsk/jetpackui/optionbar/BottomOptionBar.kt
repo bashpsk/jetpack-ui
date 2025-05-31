@@ -7,62 +7,53 @@ import androidx.compose.foundation.layout.ContextualFlowRow
 import androidx.compose.foundation.layout.ContextualFlowRowOverflow
 import androidx.compose.foundation.layout.ContextualFlowRowOverflowScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onPlaced
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun BottomOptionBar(
     modifier: Modifier = Modifier,
-    optionList: SnapshotStateList<OptionBarData> = mutableStateListOf(),
+    optionList: ImmutableList<OptionBarData> = persistentListOf(),
     onOptionClick: (option: OptionBarData) -> Unit = {},
     maxLines: Int = 1,
 ) {
 
-    val isMoreOptionMenuExpanded = remember { mutableStateOf(value = false) }
-    val menuPosition = remember { mutableStateOf(value = DpOffset.Zero) }
-    val remainingItems = remember { mutableStateListOf<OptionBarData>() }
+    var isMoreOptionMenuExpanded by remember { mutableStateOf(value = false) }
+    var menuPosition by remember { mutableStateOf(value = DpOffset.Zero) }
+    var shownItemCount by remember { mutableIntStateOf(value = 0) }
+
+    val remainingItems by remember(key1 = optionList, key2 = shownItemCount) {
+        derivedStateOf { optionList.subList(shownItemCount, optionList.size) }
+    }
 
     val expandIndicator = @Composable { scope: ContextualFlowRowOverflowScope ->
 
-        val remainingItemCount = optionList.size - scope.shownItemCount
+        shownItemCount = scope.shownItemCount
 
-        remainingItems.apply {
-
-            val newItems = optionList.subList(
-                fromIndex = scope.shownItemCount,
-                toIndex = optionList.size
-            )
-
-            clear()
-            addAll(elements = newItems)
-        }
-
-        OptionView(
+        OptionBarItem(
             optionData = { OptionBarData(label = "More", icon = Icons.Filled.MoreVert) },
             onOptionClick = { operation ->
 
-                isMoreOptionMenuExpanded.value = true
+                isMoreOptionMenuExpanded = true
             }
         )
     }
@@ -70,7 +61,7 @@ fun BottomOptionBar(
     Box(
         modifier = Modifier
             .wrapContentSize()
-            .background(color = MaterialTheme.colorScheme.surfaceContainerHigh),
+            .background(color = BottomAppBarDefaults.containerColor),
         contentAlignment = Alignment.Center
     ) {
 
@@ -79,7 +70,7 @@ fun BottomOptionBar(
                 .align(alignment = Alignment.Center)
                 .onPlaced { layoutCoordinates ->
 
-                    menuPosition.value = DpOffset(x = layoutCoordinates.size.width.dp, y = 0.dp)
+                    menuPosition = DpOffset(x = layoutCoordinates.size.width.dp, y = 0.dp)
                 },
             maxLines = maxLines,
             itemCount = optionList.size,
@@ -88,56 +79,39 @@ fun BottomOptionBar(
                 expandIndicator = expandIndicator,
                 collapseIndicator = {}
             ),
-            verticalArrangement = Arrangement.Center,
-            horizontalArrangement = Arrangement.spacedBy(space = 8.dp)
+            verticalArrangement = Arrangement.spacedBy(space = 4.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) { itemIndex ->
 
-            OptionView(
+            OptionBarItem(
                 optionData = { optionList[itemIndex] },
                 onOptionClick = { operation ->
 
                     onOptionClick(operation)
-                    isMoreOptionMenuExpanded.value = false
+                    isMoreOptionMenuExpanded = false
                 }
             )
         }
 
         DropdownMenu(
-            expanded = isMoreOptionMenuExpanded.value,
+            expanded = isMoreOptionMenuExpanded,
             onDismissRequest = {
 
-                isMoreOptionMenuExpanded.value = false
+                isMoreOptionMenuExpanded = false
             },
-            offset = menuPosition.value
+            offset = menuPosition
         ) {
 
             HorizontalDivider()
 
             remainingItems.forEach { item ->
 
-                DropdownMenuItem(
-                    text = {
+                OptionMenuItem(
+                    optionData = { item },
+                    onOptionClick = { option ->
 
-                        Text(
-                            text = item.label,
-                            textAlign = TextAlign.Start,
-                            maxLines = 1,
-                            style = MaterialTheme.typography.bodyMedium,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                    leadingIcon = {
-
-                        Icon(
-                            modifier = Modifier.size(size = 20.dp),
-                            imageVector = item.icon,
-                            contentDescription = item.label
-                        )
-                    },
-                    onClick = {
-
-                        isMoreOptionMenuExpanded.value = false
-                        onOptionClick(item)
+                        onOptionClick(option)
+                        isMoreOptionMenuExpanded = false
                     }
                 )
             }

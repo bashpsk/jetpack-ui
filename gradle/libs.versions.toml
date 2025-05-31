@@ -10,6 +10,7 @@ activity-compose = "1.10.1"
 compose-bom = "2025.05.01"
 navigation-compose = "2.9.0"
 material-icons = "1.7.8"
+kotlinx-collections-immutable = "0.4.0"
 empty-format = "1.0.2"
 
 [libraries]
@@ -33,6 +34,7 @@ androidx-compose-material3-adaptive = { group = "androidx.compose.material3.adap
 androidx-compose-material3-adaptive-layout = { group = "androidx.compose.material3.adaptive", name = "adaptive-layout" }
 androidx-compose-material3-adaptive-navigation = { group = "androidx.compose.material3.adaptive", name = "adaptive-navigation" }
 androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "material-icons" }
+kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlinx-collections-immutable" }
 bashpsk-empty-format = { group = "com.github.bashpsk", name = "empty-format", version.ref = "empty-format" }
 
 [plugins]

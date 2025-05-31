@@ -8,5 +8,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 @Immutable
 data class OptionBarData(
     val label: String = "Label",
-    val icon: ImageVector = Icons.Filled.Info
+    val icon: ImageVector = Icons.Filled.Info,
+    val isEnable: Boolean = true
 )
