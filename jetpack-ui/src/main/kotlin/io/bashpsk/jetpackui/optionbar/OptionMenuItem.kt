@@ -12,7 +12,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun OptionMenuItem(
+internal fun OptionMenuItem(
     modifier: Modifier = Modifier,
     optionData: () -> OptionBarData = { OptionBarData() },
     onOptionClick: (option: OptionBarData) -> Unit = {}
