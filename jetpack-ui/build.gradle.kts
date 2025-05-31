@@ -46,6 +46,14 @@ android {
 
         compose = true
     }
+
+    publishing {
+
+        singleVariant("release") {
+
+            withSourcesJar()
+        }
+    }
 }
 
 dependencies {
@@ -88,18 +96,19 @@ dependencies {
     implementation(libs.bashpsk.empty.format)
 }
 
-afterEvaluate {
+publishing {
 
-    publishing {
+    publications {
 
-        publications {
+        register<MavenPublication>("release") {
 
-            register("release", MavenPublication::class) {
+            groupId = "io.bashpsk"
+            artifactId = "jetpack-ui"
+            version = "1.0.0"
+
+            afterEvaluate {
 
                 from(components["release"])
-                groupId = "io.bashpsk"
-                artifactId = "jetpack-ui"
-                version = "1.0.0"
             }
         }
     }
