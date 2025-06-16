@@ -5,13 +5,13 @@ core-ktx = "1.16.0"
 junit = "4.13.2"
 junit-version = "1.2.1"
 espresso-core = "3.6.1"
-lifecycle-runtime = "2.9.0"
+lifecycle-runtime = "2.9.1"
 activity-compose = "1.10.1"
-compose-bom = "2025.05.01"
+compose-bom = "2025.06.00"
 navigation-compose = "2.9.0"
 material-icons = "1.7.8"
 kotlinx-collections-immutable = "0.4.0"
-empty-format = "1.0.2"
+empty-format = "1.0.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
