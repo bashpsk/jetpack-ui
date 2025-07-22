@@ -6,6 +6,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -38,7 +39,7 @@ fun VideoGestureBox(
     config: VideoGestureConfig = VideoGestureConfig(),
     onTapChanges: (changes: TapChanges) -> Unit = {},
     onDragChanges: (changes: DragChanges) -> Unit = {},
-    content: @Composable @UiComposable () -> Unit
+    content: @Composable @UiComposable BoxWithConstraintsScope.() -> Unit
 ) {
 
     val dragGestureCoroutineScope = rememberCoroutineScope()
