@@ -55,6 +55,7 @@ android {
         singleVariant("release") {
 
             withSourcesJar()
+            withJavadocJar()
         }
     }
 }
@@ -80,9 +81,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     //  KOTLINX             :
-//    implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.collections.immutable)
-//    implementation(libs.kotlinx.datetime)
 
     //  ICON            :
     implementation(libs.androidx.material.icons.extended)
@@ -105,13 +104,12 @@ publishing {
 
         register<MavenPublication>("release") {
 
-            groupId = "io.bashpsk"
-            artifactId = "jetpack-ui"
-            version = "1.0.0"
-
             afterEvaluate {
 
                 from(components["release"])
+                groupId = "io.bashpsk"
+                artifactId = "jetpack-ui"
+                version = "1.0.0"
             }
         }
     }
