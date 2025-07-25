@@ -203,8 +203,8 @@ fun VideoGestureBox(
 
                                 val brightness = when (dragAmount.y > 0.0F) {
 
-                                    true -> ValueChange.Increased
-                                    false -> ValueChange.Decreased
+                                    true -> ValueChange.Decreased
+                                    false -> ValueChange.Increased
                                 }
 
                                 onDragChanges(DragChanges.BrightnessChanges(brightness))
@@ -234,8 +234,8 @@ fun VideoGestureBox(
 
                                 val volume = when (dragAmount.y > 0.0F) {
 
-                                    true -> ValueChange.Increased
-                                    false -> ValueChange.Decreased
+                                    true -> ValueChange.Decreased
+                                    false -> ValueChange.Increased
                                 }
 
                                 onDragChanges(DragChanges.VolumeChanges(volume))
