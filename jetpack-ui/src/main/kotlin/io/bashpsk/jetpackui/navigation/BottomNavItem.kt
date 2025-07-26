@@ -23,6 +23,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
+/**
+ * A composable function that represents a single item in a bottom navigation bar.
+ * It displays an icon and an optional label. The label is only visible when the item is selected.
+ *
+ * @param isSelected A lambda function that returns `true` if the item is currently selected,
+ * `false` otherwise. Defaults to `false`.
+ * @param label A lambda function that returns the text label for the item. Defaults to an empty
+ * string.
+ * @param icon A lambda function that returns the [ImageVector] for the item's icon.
+ * @param shape The shape of the item's container. Defaults to a [RoundedCornerShape] with 0.dp
+ * radius.
+ * @param containerColor The background color of the item's container.
+ * @param contentColor The color of the content (icon and text) within the item.
+ * @param enabled A boolean indicating whether the item is enabled and can be interacted with.
+ * @param onItemClick A lambda function that will be invoked when the item is clicked.
+ */
 @Composable
 fun BottomNavItem(
     isSelected: () -> Boolean = { false },

@@ -19,10 +19,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
+/**
+ * Composable function to display a single option item in the option bar.
+ *
+ * This function creates a visual representation of an option, typically including an icon and a
+ * label. It's designed to be used within a larger option bar structure.
+ *
+ * @param modifier Optional [Modifier] to be applied to the composable.
+ * @param optionData The [OptionBarData] object containing the icon, label, and enabled state for
+ * this item.
+ * @param onOptionClick A lambda function that will be invoked when this option item is clicked.
+ * It receives the [OptionBarData] of the clicked item as a parameter.
+ */
 @Composable
 internal fun OptionBarItem(
     modifier: Modifier = Modifier,
-    optionData: () -> OptionBarData = { OptionBarData() },
+    optionData: OptionBarData = OptionBarData(),
     onOptionClick: (option: OptionBarData) -> Unit = {}
 ) {
 
@@ -36,11 +48,11 @@ internal fun OptionBarItem(
     Card(
         modifier = modifier,
         shape = MaterialTheme.shapes.extraSmall,
-        enabled = optionData().isEnable,
+        enabled = optionData.isEnable,
         colors = cardColors,
         onClick = {
 
-            onOptionClick(optionData())
+            onOptionClick(optionData)
         }
     ) {
 
@@ -52,14 +64,14 @@ internal fun OptionBarItem(
 
             Icon(
                 modifier = Modifier.size(size = 20.dp),
-                imageVector = optionData().icon,
-                contentDescription = optionData().label
+                imageVector = optionData.icon,
+                contentDescription = optionData.label
             )
 
             Spacer(modifier = Modifier.height(height = 8.dp))
 
             Text(
-                text = optionData().label,
+                text = optionData.label,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
                 style = MaterialTheme.typography.bodyMedium,

@@ -32,6 +32,37 @@ import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.time.Duration.Companion.milliseconds
 
+/**
+ * A Composable function that provides a box with gesture detection capabilities,
+ * specifically designed for video player-like interactions.
+ *
+ * It detects various tap and drag gestures and provides callbacks for them.
+ * The behavior of these gestures can be customized through the [config] parameter.
+ *
+ * This Composable uses [BoxWithConstraints] to get the available screen space
+ * and adapts its gesture detection logic accordingly.
+ *
+ * It handles:
+ * - Single taps.
+ * - Double taps (can be configured to trigger backward/forward actions based on tap location).
+ * - Drag gestures in different regions of the screen:
+ *     - Horizontal drag at the top.
+ *     - Horizontal drag at the bottom.
+ *     - Vertical drag on the left side (commonly used for brightness control).
+ *     - Vertical drag on the right side (commonly used for volume control).
+ * - Two-finger pinch-to-zoom and pan gestures (if enabled in [config]).
+ *
+ * @param modifier The modifier to be applied to the layout.
+ * @param config An instance of [VideoGestureConfig] to customize the gesture behavior.
+ *               Defaults to [VideoGestureConfig].
+ * @param onTapChanges A lambda that is invoked when a tap gesture occurs.
+ *                     It receives a [TapChanges] sealed class instance indicating the type of tap.
+ * @param onDragChanges A lambda that is invoked during drag gestures.
+ *                      It receives a [DragChanges] sealed class instance indicating the state and
+ *                      type of drag.
+ * @param content The content to be placed inside the gesture-detecting box.
+ *                This is a composable lambda that receives a [BoxWithConstraintsScope].
+ */
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun VideoGestureBox(

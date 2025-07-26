@@ -2,6 +2,33 @@ package io.bashpsk.jetpackui.gesture
 
 import androidx.compose.runtime.Immutable
 
+/**
+ * Configuration class for video gesture controls.
+ *
+ * This class defines the behavior of various gestures that can be performed on a video player.
+ *
+ * @property isDoubleTapEnable Whether double-tap gestures are enabled. Defaults to `true`.
+ * @property isHorizontalTopEnable Whether horizontal swipe gestures in the top area are enabled.
+ * Defaults to `true`.
+ * @property isHorizontalBottomEnable Whether horizontal swipe gestures in the bottom area are
+ * enabled. Defaults to `true`.
+ * @property isVerticalLeftEnable Whether vertical swipe gestures in the left area are enabled.
+ * Defaults to `true`.
+ * @property isVerticalRightEnable Whether vertical swipe gestures in the right area are enabled.
+ * Defaults to `true`.
+ * @property isZoomEnable Whether pinch-to-zoom gestures are enabled. Defaults to `true`.
+ * @property isPanEnable Whether pan gestures are enabled. Defaults to `true`.
+ * @property horizontalTopMinimumSwipe The minimum swipe distance (in pixels) required to trigger a
+ * horizontal top gesture. Defaults to `25`.
+ * @property horizontalBottomMinimumSwipe The minimum swipe distance (in pixels) required to trigger
+ * a horizontal bottom gesture. Defaults to `25`.
+ * @property verticalLeftMinimumSwipe The minimum swipe distance (in pixels) required to trigger a
+ * vertical left gesture. Defaults to `25`.
+ * @property verticalRightMinimumSwipe The minimum swipe distance (in pixels) required to trigger a
+ * vertical right gesture. Defaults to `25`.
+ * @property gestureMargin The margin (in pixels) from the edges of the video player where gestures
+ * are still recognized. Defaults to `5`.
+ */
 @Immutable
 data class VideoGestureConfig(
     val isDoubleTapEnable: Boolean = true,

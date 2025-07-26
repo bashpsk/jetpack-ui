@@ -28,6 +28,18 @@ import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
+/**
+ * A composable function that displays a bottom option bar.
+ *
+ * This function uses a [ContextualFlowRow] to display the options. If there are more options than
+ * can be displayed in the available space, an overflow menu is shown.
+ * The overflow menu is a [DropdownMenu] that displays the remaining options.
+ *
+ * @param modifier The modifier to be applied to the bottom option bar.
+ * @param optionList The list of options to be displayed.
+ * @param onOptionClick A callback that is invoked when an option is clicked.
+ * @param maxLines The maximum number of lines to be used for the options.
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun BottomOptionBar(
@@ -50,7 +62,7 @@ fun BottomOptionBar(
         shownItemCount = scope.shownItemCount
 
         OptionBarItem(
-            optionData = { OptionBarData(label = "More", icon = Icons.Filled.MoreVert) },
+            optionData = OptionBarData(label = "More", icon = Icons.Filled.MoreVert),
             onOptionClick = { operation ->
 
                 isMoreOptionMenuExpanded = true
@@ -84,7 +96,7 @@ fun BottomOptionBar(
         ) { itemIndex ->
 
             OptionBarItem(
-                optionData = { optionList[itemIndex] },
+                optionData = optionList[itemIndex],
                 onOptionClick = { operation ->
 
                     onOptionClick(operation)
@@ -107,7 +119,7 @@ fun BottomOptionBar(
             remainingItems.forEach { item ->
 
                 OptionMenuItem(
-                    optionData = { item },
+                    optionData = item,
                     onOptionClick = { option ->
 
                         onOptionClick(option)
