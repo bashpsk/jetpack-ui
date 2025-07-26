@@ -5,6 +5,11 @@ import android.content.Context
 import android.media.AudioManager
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,13 +23,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import io.bashpsk.jetpackui.gesture.DragChanges
 import io.bashpsk.jetpackui.gesture.TapChanges
 import io.bashpsk.jetpackui.gesture.ValueChange
@@ -41,7 +50,6 @@ fun VideoGestureDemoScreen() {
 
     val context = LocalContext.current
     val activity = LocalActivity.current
-    val configuration = LocalConfiguration.current
     val window = activity?.window
 
     val audioManager = remember { context.getSystemService(Context.AUDIO_SERVICE) as AudioManager }
@@ -90,20 +98,20 @@ fun VideoGestureDemoScreen() {
 
                 when (changes) {
 
-                    is DragChanges.BrightnessChanges -> {
+                    is DragChanges.VerticalLeftChanges -> {
 
                         when (changes.changes) {
 
-                            ValueChange.Increased -> when (brightness <= 0.00F) {
-
-                                true -> brightness = 0.00F
-                                false -> brightness -= 0.02F
-                            }
-
-                            ValueChange.Decreased -> when (brightness >= 1.00F) {
+                            ValueChange.Increased -> when (brightness >= 1.00F) {
 
                                 true -> brightness = 1.00F
                                 false -> brightness += 0.02F
+                            }
+
+                            ValueChange.Decreased -> when (brightness <= 0.00F) {
+
+                                true -> brightness = 0.00F
+                                false -> brightness -= 0.02F
                             }
 
                             else -> {}
@@ -122,77 +130,25 @@ fun VideoGestureDemoScreen() {
 
                     is DragChanges.DragStart -> setDebug("DragStart : ${changes.position}")
 
-                    is DragChanges.PanChanges -> imageViewOffset += changes.changes
+                    is DragChanges.HorizontalTopChanges -> {
 
-                    is DragChanges.SeekChanges -> setDebug("SeekChanges : ${changes.changes}")
+                        setDebug("HorizontalTopChanges : ${changes.changes}")
+                    }
+
+                    is DragChanges.HorizontalBottomChanges -> {
+
+                        setDebug("HorizontalBottomChanges : ${changes.changes}")
+                    }
 
                     is DragChanges.Unknown -> setDebug("Unknown")
 
-                    is DragChanges.VolumeChanges -> {
+                    is DragChanges.VerticalRightChanges -> {
 
                         currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
 
                         when (changes.changes) {
 
                             ValueChange.Increased -> {
-
-                                val isMaxVolume = currentVolume == maxVolume
-                                val isBoost = boostedFinish >= 1.0F
-                                val isBoostLeast = boostedFinish == 1.0F
-
-                                when {
-
-                                    isMaxVolume && isBoost -> {
-
-                                        boostedFinish = (boostedFinish - 1.0F).coerceIn(
-                                            range = 0.0F..30.0F
-                                        )
-
-                                        setDebug("Volume Boosted : $boostedFinish")
-                                    }
-
-                                    isMaxVolume && isBoostLeast -> {
-
-                                        boostedFinish = (boostedFinish - 1.0F).coerceIn(
-                                            range = 0.0F..30.0F
-                                        )
-
-                                        setDebug("Volume Boosted : $boostedFinish")
-                                    }
-
-                                    isMaxVolume.not() -> {
-
-                                        audioManager.adjustStreamVolume(
-                                            AudioManager.STREAM_MUSIC,
-                                            AudioManager.ADJUST_LOWER,
-                                            AudioManager.FLAG_PLAY_SOUND
-                                        )
-
-                                        currentVolume = audioManager.getStreamVolume(
-                                            AudioManager.STREAM_MUSIC
-                                        )
-
-                                        setDebug("Volume Normal : $currentVolume")
-                                    }
-
-                                    else -> {
-
-                                        audioManager.adjustStreamVolume(
-                                            AudioManager.STREAM_MUSIC,
-                                            AudioManager.ADJUST_LOWER,
-                                            AudioManager.FLAG_PLAY_SOUND
-                                        )
-
-                                        currentVolume = audioManager.getStreamVolume(
-                                            AudioManager.STREAM_MUSIC
-                                        )
-
-                                        setDebug("Volume Normal : $currentVolume")
-                                    }
-                                }
-                            }
-
-                            ValueChange.Decreased -> {
 
                                 val isMaxVolume = currentVolume == maxVolume
                                 val isBoost = boostedFinish <= 30.0F
@@ -250,11 +206,73 @@ fun VideoGestureDemoScreen() {
                                 }
                             }
 
+                            ValueChange.Decreased -> {
+
+                                val isMaxVolume = currentVolume == maxVolume
+                                val isBoost = boostedFinish >= 1.0F
+                                val isBoostLeast = boostedFinish == 1.0F
+
+                                when {
+
+                                    isMaxVolume && isBoost -> {
+
+                                        boostedFinish = (boostedFinish - 1.0F).coerceIn(
+                                            range = 0.0F..30.0F
+                                        )
+
+                                        setDebug("Volume Boosted : $boostedFinish")
+                                    }
+
+                                    isMaxVolume && isBoostLeast -> {
+
+                                        boostedFinish = (boostedFinish - 1.0F).coerceIn(
+                                            range = 0.0F..30.0F
+                                        )
+
+                                        setDebug("Volume Boosted : $boostedFinish")
+                                    }
+
+                                    isMaxVolume.not() -> {
+
+                                        audioManager.adjustStreamVolume(
+                                            AudioManager.STREAM_MUSIC,
+                                            AudioManager.ADJUST_LOWER,
+                                            AudioManager.FLAG_PLAY_SOUND
+                                        )
+
+                                        currentVolume = audioManager.getStreamVolume(
+                                            AudioManager.STREAM_MUSIC
+                                        )
+
+                                        setDebug("Volume Normal : $currentVolume")
+                                    }
+
+                                    else -> {
+
+                                        audioManager.adjustStreamVolume(
+                                            AudioManager.STREAM_MUSIC,
+                                            AudioManager.ADJUST_LOWER,
+                                            AudioManager.FLAG_PLAY_SOUND
+                                        )
+
+                                        currentVolume = audioManager.getStreamVolume(
+                                            AudioManager.STREAM_MUSIC
+                                        )
+
+                                        setDebug("Volume Normal : $currentVolume")
+                                    }
+                                }
+                            }
+
                             else -> {}
                         }
                     }
 
-                    is DragChanges.ZoomChanges -> imageViewScale *= changes.changes
+                    is DragChanges.TransformChanges -> {
+
+                        imageViewScale *= changes.zoom
+                        imageViewOffset += changes.pan
+                    }
                 }
             }
         ) {
@@ -272,6 +290,73 @@ fun VideoGestureDemoScreen() {
                 contentScale = ContentScale.Fit,
                 contentDescription = "Image"
             )
+
+            GesturePreview(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .alpha(0.5F)
+            )
+
+            GesturePreview(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .alpha(0.5F)
+                    .rotate(90.0F)
+            )
         }
     }
+}
+
+@Composable
+private fun GesturePreview(modifier: Modifier = Modifier) {
+
+    Row(
+        modifier = modifier.fillMaxSize(),
+        horizontalArrangement = Arrangement.spacedBy(space = 2.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+
+        GestureColorBox(
+            modifier = Modifier
+                .weight(weight = 0.05F)
+                .fillMaxHeight(),
+            color = Color.Gray
+        )
+
+        GestureColorBox(
+            modifier = Modifier
+                .weight(weight = 0.85F / 2)
+                .fillMaxHeight(),
+            color = Color.Green
+        )
+
+        GestureColorBox(
+            modifier = Modifier
+                .weight(weight = 0.05F)
+                .fillMaxHeight(),
+            color = Color.Gray
+        )
+
+        GestureColorBox(
+            modifier = Modifier
+                .weight(weight = 0.85F / 2)
+                .fillMaxHeight(),
+            color = Color.Yellow
+        )
+
+        GestureColorBox(
+            modifier = Modifier
+                .weight(weight = 0.05F)
+                .fillMaxHeight(),
+            color = Color.Gray
+        )
+    }
+}
+
+@Composable
+private fun GestureColorBox(modifier: Modifier = Modifier, color: Color) {
+
+    Box(
+        modifier = modifier.background(color = color)
+    )
 }

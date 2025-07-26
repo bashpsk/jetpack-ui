@@ -26,7 +26,7 @@ import androidx.compose.ui.input.pointer.changedToUp
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.abs
@@ -51,12 +51,23 @@ fun VideoGestureBox(
         derivedStateOf { Size(width = screenWidth, height = screenHeight) }
     }
 
+    var resetDragActionJob by remember { mutableStateOf<Job?>(null) }
     var dragGestureAction by rememberSaveable { mutableStateOf<DragGestureAction?>(null) }
     var touchCount by rememberSaveable { mutableIntStateOf(0) }
     val isOneTouch by remember(touchCount) { derivedStateOf { touchCount == 1 } }
     val isTwoTouch by remember(touchCount) { derivedStateOf { touchCount == 2 } }
 
-    var dragSwipeMinimum by remember { mutableStateOf(Offset.Zero) }
+    var swipeAmount by remember { mutableStateOf(Offset.Zero) }
+
+    fun resetDragGestureAction() {
+
+        resetDragActionJob?.cancel()
+        resetDragActionJob = dragGestureCoroutineScope.launch(context = Dispatchers.Default) {
+
+            delay(duration = 1000.milliseconds)
+            dragGestureAction = null
+        }
+    }
 
     val screenSizeChanged = Modifier.onSizeChanged { size ->
 
@@ -107,39 +118,28 @@ fun VideoGestureBox(
         )
     }
 
-    val dragPointerInput = Modifier.pointerInput(screenSize) {
+    val dragPointerInput = Modifier.pointerInput(screenSize, config) {
 
         detectVideoGestures(
             screenSize = screenSize,
+            deadZone = config.gestureMargin / 100.0F,
             onDragStart = { offset: Offset ->
 
-                onDragChanges(DragChanges.DragStart(offset))
+                onDragChanges(DragChanges.DragStart(position = offset))
             },
             onDragCancel = {
 
                 onDragChanges(DragChanges.DragCanceled)
-                dragGestureCoroutineScope.coroutineContext.cancelChildren()
-
-                dragGestureCoroutineScope.launch(context = Dispatchers.Default) {
-
-                    delay(duration = 1000.milliseconds)
-                    dragGestureAction = null
-                }
+                resetDragGestureAction()
             },
             onDragEnd = {
 
                 onDragChanges(DragChanges.DragEnded)
-                dragGestureCoroutineScope.coroutineContext.cancelChildren()
-
-                dragGestureCoroutineScope.launch(context = Dispatchers.Default) {
-
-                    delay(duration = 1000.milliseconds)
-                    dragGestureAction = null
-                }
+                resetDragGestureAction()
             }
         ) { change, dragAmount, direction ->
 
-            dragSwipeMinimum += dragAmount
+            swipeAmount += dragAmount
 
             when {
 
@@ -156,50 +156,76 @@ fun VideoGestureBox(
                 }
             }
 
-            val isHorizontal = direction == PointerDirection.HORIZONTAL
-            val isLeftVertical = direction == PointerDirection.LEFT_VERTICAL
-            val isRightVertical = direction == PointerDirection.RIGHT_VERTICAL
+            val isTopHorizontal = direction == PointerDirection.HorizontalTop
+            val isBottomHorizontal = direction == PointerDirection.HorizontalBottom
+            val isLeftVertical = direction == PointerDirection.VerticalLeft
+            val isRightVertical = direction == PointerDirection.VerticalRight
 
             when {
 
-                isHorizontal && config.isHorizontalSeekEnable -> when {
+                isTopHorizontal && config.isHorizontalTopEnable -> when {
 
-                    abs(x = dragSwipeMinimum.x) > config.minimumLengthSeek -> {
+                    abs(x = swipeAmount.x) > config.horizontalTopMinimumSwipe -> {
 
                         when (dragGestureAction) {
 
                             null -> {
 
-                                dragGestureAction = DragGestureAction.HorizontalSeek
+                                dragGestureAction = DragGestureAction.HorizontalTop
                                 change.consume()
                             }
 
-                            DragGestureAction.HorizontalSeek -> {
+                            DragGestureAction.HorizontalTop -> {
 
-                                onDragChanges(DragChanges.SeekChanges(dragAmount.x))
+                                onDragChanges(DragChanges.HorizontalTopChanges(swipeAmount.x))
                                 change.consume()
                             }
 
                             else -> {}
                         }
 
-                        dragSwipeMinimum = Offset.Zero
+                        swipeAmount = Offset.Zero
                     }
                 }
 
-                isLeftVertical && config.isBrightnessEnable -> when {
+                isBottomHorizontal && config.isHorizontalBottomEnable -> when {
 
-                    abs(x = dragSwipeMinimum.y) > config.minimumLengthBrightness -> {
+                    abs(x = swipeAmount.x) > config.horizontalBottomMinimumSwipe -> {
 
                         when (dragGestureAction) {
 
                             null -> {
 
-                                dragGestureAction = DragGestureAction.Brightness
+                                dragGestureAction = DragGestureAction.HorizontalBottom
                                 change.consume()
                             }
 
-                            DragGestureAction.Brightness -> {
+                            DragGestureAction.HorizontalBottom -> {
+
+                                onDragChanges(DragChanges.HorizontalBottomChanges(swipeAmount.x))
+                                change.consume()
+                            }
+
+                            else -> {}
+                        }
+
+                        swipeAmount = Offset.Zero
+                    }
+                }
+
+                isLeftVertical && config.isVerticalLeftEnable -> when {
+
+                    abs(x = swipeAmount.y) > config.verticalLeftMinimumSwipe -> {
+
+                        when (dragGestureAction) {
+
+                            null -> {
+
+                                dragGestureAction = DragGestureAction.VerticalLeft
+                                change.consume()
+                            }
+
+                            DragGestureAction.VerticalLeft -> {
 
                                 val brightness = when (dragAmount.y > 0.0F) {
 
@@ -207,30 +233,30 @@ fun VideoGestureBox(
                                     false -> ValueChange.Increased
                                 }
 
-                                onDragChanges(DragChanges.BrightnessChanges(brightness))
+                                onDragChanges(DragChanges.VerticalLeftChanges(brightness))
                                 change.consume()
                             }
 
                             else -> {}
                         }
 
-                        dragSwipeMinimum = Offset.Zero
+                        swipeAmount = Offset.Zero
                     }
                 }
 
-                isRightVertical && config.isVolumeEnable -> when {
+                isRightVertical && config.isVerticalRightEnable -> when {
 
-                    abs(x = dragSwipeMinimum.y) > config.minimumLengthVolume -> {
+                    abs(x = swipeAmount.y) > config.verticalRightMinimumSwipe -> {
 
                         when (dragGestureAction) {
 
                             null -> {
 
-                                dragGestureAction = DragGestureAction.Volume
+                                dragGestureAction = DragGestureAction.VerticalRight
                                 change.consume()
                             }
 
-                            DragGestureAction.Volume -> {
+                            DragGestureAction.VerticalRight -> {
 
                                 val volume = when (dragAmount.y > 0.0F) {
 
@@ -238,14 +264,14 @@ fun VideoGestureBox(
                                     false -> ValueChange.Increased
                                 }
 
-                                onDragChanges(DragChanges.VolumeChanges(volume))
+                                onDragChanges(DragChanges.VerticalRightChanges(volume))
                                 change.consume()
                             }
 
                             else -> {}
                         }
 
-                        dragSwipeMinimum = Offset.Zero
+                        swipeAmount = Offset.Zero
                     }
                 }
 
@@ -276,23 +302,15 @@ fun VideoGestureBox(
 
                 DragGestureAction.Transform -> {
 
-                    if (config.isZoomEnable) {
+                    val finalZoomChange = zoomChange.takeIf { config.isZoomEnable } ?: 0.0F
+                    val finalPanChange = panChange.takeIf { config.isPanEnable } ?: Offset.Zero
 
-                        onDragChanges(DragChanges.ZoomChanges(zoomChange))
+                    if (config.isZoomEnable || config.isPanEnable) {
+
+                        onDragChanges(DragChanges.TransformChanges(finalZoomChange, finalPanChange))
                     }
 
-                    if (config.isPanEnable) {
-
-                        onDragChanges(DragChanges.PanChanges(panChange))
-                    }
-
-                    dragGestureCoroutineScope.coroutineContext.cancelChildren()
-
-                    dragGestureCoroutineScope.launch(context = Dispatchers.Default) {
-
-                        delay(duration = 1000.milliseconds)
-                        dragGestureAction = null
-                    }
+                    resetDragGestureAction()
                 }
 
                 else -> return@rememberTransformableState
@@ -328,7 +346,8 @@ fun VideoGestureBox(
 private enum class DragGestureAction {
 
     Transform,
-    Volume,
-    Brightness,
-    HorizontalSeek;
+    HorizontalTop,
+    HorizontalBottom,
+    VerticalLeft,
+    VerticalRight;
 }
