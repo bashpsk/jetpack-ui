@@ -91,6 +91,7 @@ dependencies {
 
     //  PSK LIBS        :
     implementation(libs.bashpsk.empty.format)
+    implementation(libs.bashpsk.image.kolor)
 }
 
 publishing {
