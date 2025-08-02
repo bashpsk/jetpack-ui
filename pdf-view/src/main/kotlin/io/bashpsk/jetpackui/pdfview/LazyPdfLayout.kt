@@ -2,7 +2,6 @@ package io.bashpsk.jetpackui.pdfview
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
@@ -62,7 +62,7 @@ fun LazyPdfLayout(
 
     val lastVisiblePage by remember(visibleItemsInfo, state) {
         derivedStateOf {
-            visibleItemsInfo.lastOrNull()?.index ?: (state.pageCount - 1).coerceAtLeast(0)
+            visibleItemsInfo.lastOrNull()?.index ?: (state.totalPages - 1).coerceAtLeast(0)
         }
     }
 
@@ -80,7 +80,7 @@ fun LazyPdfLayout(
         }
     }
 
-    if (state.pageCount == 0 && state.getCachedBitmap(pageIndex = -1) == null) {
+    if (state.totalPages == 0 && state.getCachedBitmap(pageIndex = -1) == null) {
 
         BoxWithConstraints(
             modifier = modifier,
@@ -97,7 +97,7 @@ fun LazyPdfLayout(
         return
     }
 
-    if (state.pageCount == 0) {
+    if (state.totalPages == 0) {
 
         BoxWithConstraints(
             modifier = modifier,
@@ -129,12 +129,12 @@ fun LazyPdfLayout(
             }
         }
 
-        LaunchedEffect(firstVisiblePage, lastVisiblePage, state.pageCount, targetPageSize) {
+        LaunchedEffect(firstVisiblePage, lastVisiblePage, state.totalPages, targetPageSize) {
 
-            if (state.pageCount > 0 && targetPageSize.width > 0 && targetPageSize.height > 0) {
+            if (state.totalPages > 0 && targetPageSize.width > 0 && targetPageSize.height > 0) {
 
                 val startPreload = max(0, firstVisiblePage - bufferPages)
-                val endPreload = min(state.pageCount - 1, lastVisiblePage + bufferPages)
+                val endPreload = min(state.totalPages - 1, lastVisiblePage + bufferPages)
 
                 for (page in startPreload..endPreload) {
 
@@ -161,7 +161,7 @@ fun LazyPdfLayout(
         ) {
 
             items(
-                count = state.pageCount,
+                count = state.totalPages,
                 key = { pageIndex -> "PAGE-$pageIndex" }
             ) { pageIndex ->
 
@@ -169,7 +169,7 @@ fun LazyPdfLayout(
                     initialValue = state.getCachedBitmap(pageIndex = pageIndex),
                     key1 = pageIndex,
                     key2 = targetPageSize,
-                    key3 = state.pageCount
+                    key3 = state.totalPages
                 ) {
 
                     var currentBitmap = state.getCachedBitmap(pageIndex = pageIndex)
@@ -189,7 +189,7 @@ fun LazyPdfLayout(
                     value = currentBitmap
                 }
 
-                loadedBitmap?.let { bitmap->
+                loadedBitmap?.let { bitmap ->
 
                     val bitmapAspectRatio by remember(bitmap) {
                         derivedStateOf {
@@ -204,9 +204,18 @@ fun LazyPdfLayout(
                         modifier = Modifier
                             .fillMaxWidth()
                             .aspectRatio(ratio = bitmapAspectRatio)
-                            .background(Color.White),
+                            .drawWithContent {
+
+                                drawRect(
+                                    color = Color.White,
+                                    colorFilter = state.filterType?.colorFilter
+                                )
+
+                                drawContent()
+                            },
                         bitmap = bitmap.asImageBitmap(),
                         contentScale = ContentScale.Fit,
+                        colorFilter = state.filterType?.colorFilter,
                         contentDescription = "PDF Page ${pageIndex + 1}"
                     )
                 } ?: run {

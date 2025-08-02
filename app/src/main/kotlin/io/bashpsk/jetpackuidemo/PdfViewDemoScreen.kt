@@ -19,8 +19,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.bashpsk.jetpackui.pdfview.PdfSource
 import io.bashpsk.jetpackui.pdfview.LazyPdfLayout
+import io.bashpsk.jetpackui.pdfview.PdfSource
 import io.bashpsk.jetpackui.pdfview.rememberPdfViewState
 
 @Composable

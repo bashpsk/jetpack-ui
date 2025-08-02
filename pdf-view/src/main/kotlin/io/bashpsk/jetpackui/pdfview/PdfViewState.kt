@@ -19,6 +19,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntSize
 import androidx.core.graphics.createBitmap
+import io.bashpsk.imagekolor.filter.ImageFilterType
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -56,16 +57,19 @@ class PdfViewState(
 
     private var parcelFileDescriptor: ParcelFileDescriptor? = null
 
-    var pageCount by mutableIntStateOf(0)
-        private set
-
     private val bitmapCache = LruCache<Int, Bitmap>(10)
     private val renderMutex = Mutex()
 
     private val renderJobs = persistentMapOf<Int, Job>()
 
-    internal var zoomScale by  mutableFloatStateOf(1f)
-    internal var position by  mutableStateOf(Offset.Zero)
+    var totalPages by mutableIntStateOf(0)
+        private set
+
+    var filterType by mutableStateOf<ImageFilterType?>(null)
+        private set
+
+    internal var zoomScale by mutableFloatStateOf(1f)
+    internal var position by mutableStateOf(Offset.Zero)
 
     init {
 
@@ -94,7 +98,7 @@ class PdfViewState(
 
                     else -> {
 
-                        pageCount = 0
+                        totalPages = 0
                         return@launch
                     }
                 }
@@ -102,19 +106,19 @@ class PdfViewState(
                 parcelFileDescriptor?.let { descriptor ->
 
                     pdfRenderer = PdfRenderer(descriptor)
-                    pageCount = pdfRenderer?.pageCount ?: 0
+                    totalPages = pdfRenderer?.pageCount ?: 0
                 } ?: run {
 
-                    pageCount = 0
+                    totalPages = 0
                 }
             } catch (exception: IOException) {
 
                 Log.e(LOG_TAG, "Error loading PDF : ${exception.message}", exception)
-                pageCount = 0
+                totalPages = 0
             } catch (exception: SecurityException) {
 
                 Log.e(LOG_TAG, "Error loading PDF : ${exception.message}", exception)
-                pageCount = 0
+                totalPages = 0
             } finally {
 
                 renderJobs.remove(key = -1)
@@ -126,7 +130,7 @@ class PdfViewState(
 
     fun requestPageBitmap(pageIndex: Int, targetSize: IntSize): Bitmap? {
 
-        if (pageIndex < 0 || pageIndex >= pageCount) return null
+        if (pageIndex < 0 || pageIndex >= totalPages) return null
 
         bitmapCache[pageIndex]?.let { bitmap -> return bitmap }
 
@@ -210,5 +214,10 @@ class PdfViewState(
                 parcelFileDescriptor = null
             }
         }
+    }
+
+    fun updateFilterType(filter: ImageFilterType?) {
+
+        filterType = filter
     }
 }
