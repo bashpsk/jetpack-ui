@@ -10,7 +10,7 @@ plugins {
 
 android {
 
-    namespace = "io.bashpsk.jetpackui"
+    namespace = "io.bashpsk.jetpackui.pdfview"
     compileSdk = 36
 
     defaultConfig {
@@ -26,7 +26,6 @@ android {
         release {
 
             isMinifyEnabled = false
-
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -101,7 +100,7 @@ publishing {
         register<MavenPublication>("release") {
 
             groupId = "io.bashpsk.jetpackui"
-            artifactId = "jetpack-ui"
+            artifactId = "pdf-view"
             version = "1.0.0"
 
             afterEvaluate {

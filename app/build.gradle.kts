@@ -46,10 +46,7 @@ android {
 
     kotlin {
 
-        compilerOptions {
-
-            jvmTarget = JvmTarget.JVM_17
-        }
+        compilerOptions.jvmTarget = JvmTarget.JVM_17
     }
 
     buildFeatures {
@@ -97,4 +94,5 @@ dependencies {
 
     //  MODULE              :
     implementation(project(":jetpack-ui"))
+    implementation(project(":pdf-view"))
 }
