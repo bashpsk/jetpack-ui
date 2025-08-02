@@ -1,4 +1,4 @@
-package io.bashpsk.jetpackuidemo.ui.utils
+package io.bashpsk.jetpackuidemo
 
 import android.util.Log
 

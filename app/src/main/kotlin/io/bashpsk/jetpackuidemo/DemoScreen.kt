@@ -1,4 +1,4 @@
-package io.bashpsk.jetpackuidemo.ui.screen
+package io.bashpsk.jetpackuidemo
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.bashpsk.jetpackui.optionbar.BottomOptionBar
-import io.bashpsk.jetpackuidemo.ui.data.FileOperation
 
 @Composable
 fun DemoScreen() {

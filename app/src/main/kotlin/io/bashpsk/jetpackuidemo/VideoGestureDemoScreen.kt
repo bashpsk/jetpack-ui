@@ -1,4 +1,4 @@
-package io.bashpsk.jetpackuidemo.ui.screen
+package io.bashpsk.jetpackuidemo
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -39,8 +39,6 @@ import io.bashpsk.jetpackui.gesture.TapChanges
 import io.bashpsk.jetpackui.gesture.ValueChange
 import io.bashpsk.jetpackui.gesture.VideoGestureBox
 import io.bashpsk.jetpackui.gesture.VideoGestureConfig
-import io.bashpsk.jetpackuidemo.R
-import io.bashpsk.jetpackuidemo.ui.utils.setDebug
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)

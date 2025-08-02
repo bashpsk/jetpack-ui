@@ -1,12 +1,12 @@
-package io.bashpsk.jetpackuidemo.ui.screen
+package io.bashpsk.jetpackuidemo
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.bashpsk.jetpackuidemo.ui.data.ListData
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -48,7 +48,7 @@ class DemoViewModel : ViewModel() {
         flowOf(value = newOptionList)
     }.stateIn(
         scope = viewModelScope,
-        started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000),
+        started = SharingStarted.WhileSubscribed(5000),
         initialValue = persistentListOf()
     )
 
@@ -57,7 +57,7 @@ class DemoViewModel : ViewModel() {
         flowOf(value = paths.isNotEmpty())
     }.stateIn(
         scope = viewModelScope,
-        started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000),
+        started = SharingStarted.WhileSubscribed(5000),
         initialValue = false
     )
 

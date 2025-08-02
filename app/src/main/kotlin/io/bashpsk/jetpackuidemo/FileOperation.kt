@@ -1,4 +1,4 @@
-package io.bashpsk.jetpackuidemo.ui.data
+package io.bashpsk.jetpackuidemo
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ListAlt

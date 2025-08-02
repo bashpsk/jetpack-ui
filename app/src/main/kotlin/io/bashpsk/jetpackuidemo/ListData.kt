@@ -1,4 +1,4 @@
-package io.bashpsk.jetpackuidemo.ui.data
+package io.bashpsk.jetpackuidemo
 
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
