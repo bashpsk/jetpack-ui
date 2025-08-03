@@ -128,12 +128,10 @@ class PdfViewState(
         renderJobs.put(key = -1, value = newJob)
     }
 
-    fun requestPageBitmap(pageIndex: Int, targetSize: IntSize): Bitmap? {
+    fun requestPageBitmap(pageIndex: Int, pageSize: IntSize): Bitmap? {
 
         if (pageIndex < 0 || pageIndex >= totalPages) return null
-
         bitmapCache[pageIndex]?.let { bitmap -> return bitmap }
-
         if (renderJobs[pageIndex]?.isActive == true) return null
 
         val newJob = coroutineScope.launch(context = SupervisorJob()) {
@@ -142,7 +140,7 @@ class PdfViewState(
 
                 if (isActive) renderPageBitmap(
                     pageIndex = pageIndex,
-                    targetSize = targetSize
+                    pageSize = pageSize
                 )?.let { bitmap ->
 
                     bitmapCache.put(key = pageIndex, value = bitmap)
@@ -158,12 +156,11 @@ class PdfViewState(
         return null
     }
 
-    private suspend fun renderPageBitmap(pageIndex: Int, targetSize: IntSize): Bitmap? {
+    private suspend fun renderPageBitmap(pageIndex: Int, pageSize: IntSize): Bitmap? {
 
         renderMutex.withLock {
 
             bitmapCache[pageIndex]?.let { bitmap -> return bitmap }
-
             if (pdfRenderer == null || !coroutineContext.isActive) return null
 
             return try {
@@ -171,8 +168,8 @@ class PdfViewState(
                 pdfRenderer?.openPage(pageIndex)?.use { currentPage ->
 
                     val bitmap = createBitmap(
-                        width = targetSize.width.coerceAtLeast(1),
-                        height = targetSize.height.coerceAtLeast(1)
+                        width = pageSize.width.coerceAtLeast(1),
+                        height = pageSize.height.coerceAtLeast(1)
                     )
 
                     currentPage.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
