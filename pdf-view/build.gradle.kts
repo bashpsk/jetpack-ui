@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("maven-publish")
+//    id("maven-publish")
 }
 
 android {
@@ -49,10 +49,10 @@ android {
         compose = true
     }
 
-    publishing {
+    /*publishing {
 
         singleVariant("release")
-    }
+    }*/
 }
 
 dependencies {
@@ -94,6 +94,7 @@ dependencies {
     implementation(libs.bashpsk.image.kolor)
 }
 
+/*
 publishing {
 
     publications {
@@ -110,4 +111,4 @@ publishing {
             }
         }
     }
-}
+}*/
