@@ -33,4 +33,3 @@ dependencyResolutionManagement {
 rootProject.name = "Jetpack UI"
 include(":app")
 include(":jetpack-ui")
-include(":pdf-view")

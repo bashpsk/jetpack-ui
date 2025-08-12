@@ -94,5 +94,4 @@ dependencies {
 
     //  MODULE              :
     implementation(project(":jetpack-ui"))
-    implementation(project(":pdf-view"))
 }
