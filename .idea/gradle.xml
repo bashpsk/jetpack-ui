@@ -12,7 +12,6 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/jetpack-ui" />
-            <option value="$PROJECT_DIR$/pdf-view" />
           </set>
         </option>
       </GradleProjectSettings>

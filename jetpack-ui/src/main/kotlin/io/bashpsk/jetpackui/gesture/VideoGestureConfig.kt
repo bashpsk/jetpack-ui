@@ -1,6 +1,9 @@
 package io.bashpsk.jetpackui.gesture
 
+import android.os.Parcelable
 import androidx.compose.runtime.Immutable
+import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
 /**
  * Configuration class for video gesture controls.
@@ -30,6 +33,8 @@ import androidx.compose.runtime.Immutable
  * are still recognized. Defaults to `5`.
  */
 @Immutable
+@Parcelize
+@Serializable
 data class VideoGestureConfig(
     val isDoubleTapEnable: Boolean = true,
     val isHorizontalTopEnable: Boolean = true,
@@ -43,4 +48,4 @@ data class VideoGestureConfig(
     val verticalLeftMinimumSwipe: Int = 25,
     val verticalRightMinimumSwipe: Int = 25,
     val gestureMargin: Int = 5
-)
+) : Parcelable

@@ -18,8 +18,7 @@ class MainActivity : ComponentActivity() {
             JetpackUITheme {
 
 //                DemoScreen()
-//                VideoGestureDemoScreen()
-                PdfViewDemoScreen()
+                VideoGestureDemoScreen()
             }
         }
     }
